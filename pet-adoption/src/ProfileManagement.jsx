@@ -1,448 +1,268 @@
 import React, { useState } from 'react';
-import { User, Mail, Phone, MapPin, Calendar, Camera, Lock, Bell, Shield, Trash2, Save, Edit2, Eye, EyeOff } from 'lucide-react';
+import { User, ClipboardList, BookOpen, Key, Mail, Edit, Trash2, Calendar } from 'lucide-react';
 
+// ===============================================
+// 💡 더미 데이터 (실제 데이터 연동 전까지 사용)
+// ===============================================
+const mockApplications = [
+  { id: 101, petName: '나비 (Shih Tzu)', date: '2024-09-01', status: '심사 중', shelter: '강남 보호소' },
+  { id: 102, petName: '초코 (Poodle)', date: '2024-08-15', status: '승인 완료', shelter: '송파 보호소' },
+  { id: 103, petName: '복돌이 (Mix)', date: '2024-07-20', status: '반려', shelter: '성남 보호소' },
+];
+
+const mockUserPosts = [
+  { id: 5, title: '오늘 날씨 정말 좋네요!', category: '자유게시판', date: '2024-01-13', views: 678, comments: 42 },
+  { id: 4, title: '회원가입 오류 문의드립니다', category: '질문답변', date: '2024-01-14', views: 234, comments: 15 },
+];
+
+// ===============================================
+// 💡 서브 컴포넌트: 각 탭의 내용
+// ===============================================
+
+// 1. 회원 정보 관리 탭
+const ProfileContent = () => {
+    // ⚠️ 경고: alert()는 사용하지 않으므로 console.log로 대체
+    const handleAction = (action) => {
+        console.log(`[ACTION] ${action} 버튼 클릭됨`);
+        alert(`${action} 기능은 백엔드 연동이 필요합니다.`);
+    };
+
+    return (
+        <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2 pb-2 border-b"><User className="w-5 h-5 text-blue-600"/> 회원 기본 정보</h2>
+            
+            {/* 닉네임 */}
+            <div className="flex flex-col">
+                <label className="text-sm font-medium text-gray-600 mb-1">닉네임</label>
+                <div className="flex gap-2">
+                    <input 
+                        type="text" 
+                        defaultValue="사용자 닉네임"
+                        className="flex-1 p-3 border rounded-lg focus:ring-blue-500"
+                    />
+                    <button 
+                        onClick={() => handleAction('닉네임 중복 확인')} 
+                        className="bg-gray-200 text-gray-700 px-4 rounded-lg hover:bg-gray-300 transition text-sm"
+                    >
+                        중복 확인
+                    </button>
+                </div>
+            </div>
+
+            {/* 이메일 */}
+            <div className="flex flex-col">
+                <label className="text-sm font-medium text-gray-600 mb-1">이메일</label>
+                <div className="flex items-center p-3 border rounded-lg bg-gray-100 text-gray-500">
+                    <Mail className="w-5 h-5 mr-2 text-gray-400" /> user@example.com
+                </div>
+            </div>
+
+            {/* 비밀번호 변경 및 탈퇴 */}
+            <div className="border-t pt-4 flex justify-between items-center">
+                <button 
+                    onClick={() => handleAction('비밀번호 변경')} 
+                    className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm"
+                >
+                    <Key className="w-4 h-4" /> 비밀번호 변경
+                </button>
+                <button 
+                    onClick={() => handleAction('회원 탈퇴')} 
+                    className="text-sm text-gray-500 hover:text-red-500 transition"
+                >
+                    회원 탈퇴
+                </button>
+            </div>
+
+            {/* 저장 버튼 */}
+            <div className="flex justify-end pt-4 border-t">
+                <button 
+                    onClick={() => handleAction('정보 저장')} 
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-semibold"
+                >
+                    정보 저장
+                </button>
+            </div>
+        </div>
+    );
+};
+
+// 2. 입양 신청 내역 탭
+const ApplicationContent = () => (
+  <div className="bg-white p-6 rounded-lg shadow-md">
+      <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2 pb-2 border-b"><ClipboardList className="w-5 h-5 text-blue-600"/> 입양 신청 내역</h2>
+      
+      {/* 신청 목록 */}
+      <div className="mt-4 space-y-3">
+          {mockApplications.map(app => (
+              <div 
+                  key={app.id} 
+                  className="p-4 border rounded-lg flex justify-between items-center hover:bg-blue-50 transition cursor-pointer" // 👈 클릭 가능하도록 변경
+                  onClick={() => {
+                      console.log(`[ACTION] 입양 신청서 ID ${app.id} 상세 보기`);
+                      alert(`입양 신청서 ID ${app.id}의 상세 정보를 보여줍니다.`);
+                  }}
+              >
+                  <div>
+                      <p className="font-semibold text-gray-800">{app.petName}</p>
+                      <div className="flex items-center text-sm text-gray-500 mt-1 gap-4">
+                          <span className="flex items-center gap-1"><Calendar className="w-3 h-3"/> 신청일: {app.date}</span>
+                          <span className="flex items-center gap-1">보호소: {app.shelter}</span>
+                      </div>
+                  </div>
+                  <span className={`px-3 py-1 text-sm rounded-full font-medium ${
+                      app.status === '심사 중' ? 'bg-yellow-200 text-yellow-800' :
+                      app.status === '승인 완료' ? 'bg-green-200 text-green-800' :
+                      'bg-red-200 text-red-800'
+                  }`}>
+                      {app.status}
+                  </span>
+              </div>
+          ))}
+      </div>
+      
+  </div>
+);
+
+// 3. 나의 게시글/활동 탭
+const ActivityContent = () => {
+    // ⚠️ 경고: alert()는 사용하지 않으므로 console.log로 대체
+    const handlePostAction = (postId, action) => {
+        console.log(`[ACTION] 게시글 ID ${postId}, ${action} 버튼 클릭됨`);
+        alert(`게시글 ${postId}를 ${action} 처리합니다. (백엔드 필요)`);
+    };
+
+    return (
+        <div className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2 pb-2 border-b"><BookOpen className="w-5 h-5 text-blue-600"/> 나의 게시글</h2>
+            
+            {/* 게시글 목록 테이블 */}
+            <div className="overflow-x-auto mt-4">
+                <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">카테고리</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">제목</th>
+                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">댓글/조회</th>
+                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">날짜</th>
+                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {mockUserPosts.map(post => (
+                            <tr key={post.id} className="hover:bg-gray-50 transition">
+                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{post.category}</td>
+                                <td 
+                                    className="px-4 py-4 text-sm font-medium text-blue-600 cursor-pointer"
+                                    onClick={() => {
+                                        console.log(`[ACTION] 게시글 ID ${post.id} 제목 클릭`);
+                                        alert(`게시판 상세 페이지로 이동합니다. (ID: ${post.id})`);
+                                    }}
+                                >
+                                    {post.title}
+                                </td>
+                                <td className="px-4 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                    {post.comments} / {post.views}
+                                </td>
+                                <td className="px-4 py-4 whitespace-nowrap text-center text-sm text-gray-500">{post.date}</td>
+                                <td className="px-4 py-4 whitespace-nowrap text-center text-sm">
+                                    <div className="flex justify-center space-x-2">
+                                        <button 
+                                            onClick={() => handlePostAction(post.id, '수정')} 
+                                            className="text-blue-500 hover:text-blue-700 p-1"
+                                        >
+                                            <Edit className="w-4 h-4" />
+                                        </button>
+                                        <button 
+                                            onClick={() => handlePostAction(post.id, '삭제')} 
+                                            className="text-red-500 hover:text-red-700 p-1"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
+// 탭 버튼 컴포넌트
+const TabItem = ({ name, label, icon: Icon, active, onClick }) => (
+  <button
+    onClick={() => onClick(name)}
+    className={`flex items-center gap-2 px-6 py-3 font-medium transition whitespace-nowrap ${
+      active 
+        ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50' 
+        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+    }`}
+  >
+    <Icon className="w-5 h-5"/>
+    {label}
+  </button>
+);
+
+
+// ===============================================
+// 💡 메인 컴포넌트
+// ===============================================
 export default function ProfileManagement() {
   const [activeTab, setActiveTab] = useState('profile');
-  const [isEditing, setIsEditing] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [profileImage, setProfileImage] = useState('https://ui-avatars.com/api/?name=Hong+Gildong&size=200&background=3b82f6&color=fff');
   
-  const [profileData, setProfileData] = useState({
-    username: '홍길동',
-    email: 'hong@example.com',
-    phone: '010-1234-5678',
-    address: '서울특별시 강남구',
-    bio: '안녕하세요! 웹 개발자 홍길동입니다.',
-    birthday: '1990-01-15',
-    website: 'https://example.com'
-  });
-
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
-
-  const [notifications, setNotifications] = useState({
-    email: true,
-    push: true,
-    sms: false,
-    marketing: false
-  });
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result);
-      };
-      reader.readAsDataURL(file);
+  // 💡 누락된 탭 핸들러 함수 추가 (이전에 추가 완료)
+  const handleTabClick = (tabName) => {
+      setActiveTab(tabName);
+  };
+  
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'profile':
+        return <ProfileContent />;
+      case 'application':
+        return <ApplicationContent />;
+      case 'activity':
+        return <ActivityContent />;
+      default:
+        return <ProfileContent />;
     }
-  };
-
-  const handleProfileChange = (field, value) => {
-    setProfileData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handlePasswordChange = (field, value) => {
-    setPasswordData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleNotificationToggle = (key) => {
-    setNotifications(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
-  };
-
-  const handleSave = () => {
-    alert('프로필이 저장되었습니다!');
-    setIsEditing(false);
-  };
-
-  const handlePasswordSave = () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('새 비밀번호가 일치하지 않습니다.');
-      return;
-    }
-    alert('비밀번호가 변경되었습니다!');
-    setPasswordData({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">설정</h1>
-        </div>
-      </header>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8 text-gray-900 border-b pb-4">
+        마이페이지
+      </h1>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-4">
-              <nav className="space-y-2">
-                <button
-                  onClick={() => setActiveTab('profile')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                    activeTab === 'profile'
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <User className="w-5 h-5" />
-                  <span className="font-medium">프로필</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('password')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                    activeTab === 'password'
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <Lock className="w-5 h-5" />
-                  <span className="font-medium">비밀번호</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('notifications')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                    activeTab === 'notifications'
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <Bell className="w-5 h-5" />
-                  <span className="font-medium">알림 설정</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('security')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                    activeTab === 'security'
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <Shield className="w-5 h-5" />
-                  <span className="font-medium">보안</span>
-                </button>
-              </nav>
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            {/* Profile Tab */}
-            {activeTab === 'profile' && (
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-gray-900">프로필 정보</h2>
-                  {!isEditing ? (
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                      수정
-                    </button>
-                  ) : (
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setIsEditing(false)}
-                        className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition"
-                      >
-                        취소
-                      </button>
-                      <button
-                        onClick={handleSave}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                      >
-                        <Save className="w-4 h-4" />
-                        저장
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Profile Image */}
-                <div className="flex items-center gap-6 mb-8 pb-8 border-b">
-                  <div className="relative">
-                    <img
-                      src={profileImage}
-                      alt="Profile"
-                      className="w-24 h-24 rounded-full object-cover border-4 border-gray-100"
-                    />
-                    {isEditing && (
-                      <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition">
-                        <Camera className="w-4 h-4" />
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          className="hidden"
-                        />
-                      </label>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{profileData.username}</h3>
-                    <p className="text-gray-600">{profileData.email}</p>
-                    {isEditing && (
-                      <button className="mt-2 text-sm text-red-600 hover:text-red-700">
-                        프로필 사진 삭제
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Profile Fields */}
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <User className="w-4 h-4 inline mr-2" />
-                        이름
-                      </label>
-                      <input
-                        type="text"
-                        value={profileData.username}
-                        onChange={(e) => handleProfileChange('username', e.target.value)}
-                        disabled={!isEditing}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <Mail className="w-4 h-4 inline mr-2" />
-                        이메일
-                      </label>
-                      <input
-                        type="email"
-                        value={profileData.email}
-                        onChange={(e) => handleProfileChange('email', e.target.value)}
-                        disabled={!isEditing}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <Phone className="w-4 h-4 inline mr-2" />
-                        전화번호
-                      </label>
-                      <input
-                        type="tel"
-                        value={profileData.phone}
-                        onChange={(e) => handleProfileChange('phone', e.target.value)}
-                        disabled={!isEditing}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <Calendar className="w-4 h-4 inline mr-2" />
-                        생년월일
-                      </label>
-                      <input
-                        type="date"
-                        value={profileData.birthday}
-                        onChange={(e) => handleProfileChange('birthday', e.target.value)}
-                        disabled={!isEditing}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <MapPin className="w-4 h-4 inline mr-2" />
-                      주소
-                    </label>
-                    <input
-                      type="text"
-                      value={profileData.address}
-                      onChange={(e) => handleProfileChange('address', e.target.value)}
-                      disabled={!isEditing}
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      웹사이트
-                    </label>
-                    <input
-                      type="url"
-                      value={profileData.website}
-                      onChange={(e) => handleProfileChange('website', e.target.value)}
-                      disabled={!isEditing}
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      자기소개
-                    </label>
-                    <textarea
-                      value={profileData.bio}
-                      onChange={(e) => handleProfileChange('bio', e.target.value)}
-                      disabled={!isEditing}
-                      rows="4"
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Password Tab */}
-            {activeTab === 'password' && (
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">비밀번호 변경</h2>
-                <div className="space-y-6 max-w-md">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      현재 비밀번호
-                    </label>
-                    <input
-                      type="password"
-                      value={passwordData.currentPassword}
-                      onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      새 비밀번호
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        value={passwordData.newPassword}
-                        onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                      </button>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">8자 이상, 대소문자 및 숫자 포함</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      새 비밀번호 확인
-                    </label>
-                    <input
-                      type="password"
-                      value={passwordData.confirmPassword}
-                      onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <button
-                    onClick={handlePasswordSave}
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-                  >
-                    비밀번호 변경
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Notifications Tab */}
-            {activeTab === 'notifications' && (
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">알림 설정</h2>
-                <div className="space-y-4">
-                  {[
-                    { key: 'email', label: '이메일 알림', desc: '중요한 업데이트를 이메일로 받습니다' },
-                    { key: 'push', label: '푸시 알림', desc: '브라우저 푸시 알림을 받습니다' },
-                    { key: 'sms', label: 'SMS 알림', desc: '문자 메시지로 알림을 받습니다' },
-                    { key: 'marketing', label: '마케팅 수신', desc: '프로모션 및 이벤트 정보를 받습니다' }
-                  ].map(item => (
-                    <div key={item.key} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h3 className="font-medium text-gray-900">{item.label}</h3>
-                        <p className="text-sm text-gray-500">{item.desc}</p>
-                      </div>
-                      <button
-                        onClick={() => handleNotificationToggle(item.key)}
-                        className={`relative w-12 h-6 rounded-full transition ${
-                          notifications[item.key] ? 'bg-blue-600' : 'bg-gray-300'
-                        }`}
-                      >
-                        <span
-                          className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition transform ${
-                            notifications[item.key] ? 'translate-x-6' : ''
-                          }`}
-                        />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Security Tab */}
-            {activeTab === 'security' && (
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">보안 설정</h2>
-                <div className="space-y-6">
-                  <div className="p-4 border rounded-lg">
-                    <h3 className="font-medium text-gray-900 mb-2">2단계 인증</h3>
-                    <p className="text-sm text-gray-600 mb-4">추가 보안 계층으로 계정을 보호하세요</p>
-                    <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                      활성화
-                    </button>
-                  </div>
-
-                  <div className="p-4 border rounded-lg">
-                    <h3 className="font-medium text-gray-900 mb-2">로그인 기록</h3>
-                    <p className="text-sm text-gray-600 mb-4">최근 계정 접속 기록을 확인하세요</p>
-                    <button className="px-4 py-2 border rounded-lg hover:bg-gray-50 transition">
-                      기록 보기
-                    </button>
-                  </div>
-
-                  <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
-                    <h3 className="font-medium text-red-900 mb-2 flex items-center gap-2">
-                      <Trash2 className="w-5 h-5" />
-                      계정 삭제
-                    </h3>
-                    <p className="text-sm text-red-700 mb-4">계정을 삭제하면 모든 데이터가 영구적으로 삭제됩니다</p>
-                    <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-                      계정 삭제
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+      {/* 탭 네비게이션 */}
+      <div className="flex border-b mb-6 bg-white rounded-t-lg shadow-sm overflow-x-auto">
+        <TabItem 
+          name="profile" 
+          label="회원 정보 관리" 
+          icon={User} 
+          active={activeTab === 'profile'} 
+          onClick={handleTabClick} 
+        />
+        <TabItem 
+          name="application" 
+          label="입양 신청 내역" 
+          icon={ClipboardList} 
+          active={activeTab === 'application'} 
+          onClick={handleTabClick} 
+        />
+        <TabItem 
+          name="activity" 
+          label="나의 게시글/활동" 
+          icon={BookOpen} 
+          active={activeTab === 'activity'} 
+          onClick={handleTabClick} 
+        />
       </div>
+
+      {/* 탭 콘텐츠 영역 */}
+      {renderContent()}
+
     </div>
   );
 }

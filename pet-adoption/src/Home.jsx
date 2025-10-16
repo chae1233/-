@@ -1,18 +1,14 @@
-// src/PetAdoptionSite.jsx (메인 페이지 레이아웃)
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Carousel from './Carousel'; // 👈 캐러셀 컴포넌트 임포트
 
-//import React from 'react';
-
-import { Link } from 'react-router-dom'; // Link 컴포넌트 임포트
-
-import Carousel from './Carousel'; // 캐러셀 임포트
-// 손 모양 이미지를 위한 Placeholder 컴포넌트
+// --- Placeholder Components ---
 const HandPlaceholder = ({ text = "손 모양" }) => (
   <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-lg shadow-sm">
     <span className="text-gray-500 text-sm">{text}</span>
   </div>
 );
 
-// 개/고양이 아이콘 Placeholder 컴포넌트
 const PetIconPlaceholder = ({ name, imageSrc }) => (
   <div className="flex flex-col items-center">
     {/* 이미지 */}
@@ -24,55 +20,44 @@ const PetIconPlaceholder = ({ name, imageSrc }) => (
     <span className="text-xs text-gray-500">분류</span>
   </div>
 );
+// ----------------------------
 
 
-export default function Home({ isLoggedIn }) {
+export default function Home({ isLoggedIn }) { // 👈 isLoggedIn prop을 받습니다.
+
   return (
     <div className="min-h-screen bg-white text-gray-800">
       
-      {/* 1. 상단 내비게이션 (이미 Navigation.jsx에서 처리되지만, 이미지에 맞춰 헤더 구조를 한번 더 구현합니다) */}
-      <header className="border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <nav className="flex space-x-6 text-sm font-medium">
-            <a href="#" className="hover:text-orange-500">반려동물일기</a>
-            <a href="#" className="hover:text-orange-500">지역커뮤니티</a>
-            <a href="#" className="hover:text-orange-500">소통정보공유</a>
-            <a href="#" className="hover:text-orange-500">입양공고</a>
-            <a href="#" className="hover:text-orange-500">펫용품 리뷰</a>
-          </nav>
-<div className="flex items-center space-x-4 text-sm">
-            {/*  <a> 태그를 Link 컴포넌트로 변경 */}
-            {/* 👈 로그인 상태에 따라 링크 변경 */}
-                {isLoggedIn ? (
-                    // 로그인 상태: 마이페이지 링크 표시
-                    <>
-                        <Link to="/mypage" className="hover:text-orange-500">마이페이지</Link>
-                    </>
-                ) : (
-                    // 로그아웃 상태: 로그인 링크 표시
-                    <Link to="/login" className="hover:text-orange-500">로그인</Link>
-                )}
-            <div className="border rounded-full flex items-center px-3 py-1">
-                <input type="text" placeholder="검색" className="focus:outline-none w-20 text-sm" />
-                <span className="ml-2 text-gray-400">🔍</span>
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* 💡 Note: 사이트 공통 Navigation/Footer는 App.js에서 처리합니다. */}
 
-      {/* 2. 메인 콘텐츠 영역 */}
       <main className="max-w-7xl mx-auto px-4 pt-8 pb-16 grid grid-cols-12 gap-8">
         
         {/* 중앙 콘텐츠 (9/12 컬럼) */}
         <section className="col-span-12 lg:col-span-9 space-y-8">
           
-          {/* 2-1. 캐러셀/슬라이드 영역 */}
-          <div className="relative h-64 border border-gray-300 rounded-lg overflow-hidden">
-            {/* 2. Carousel 컴포넌트로 대체 */}
+          
+
+            <div className="flex items-center space-x-4 text-sm">
+              {/* 로그인 상태에 따라 조건부 렌더링 */}
+              {isLoggedIn ? (
+                <Link to="/mypage" className="hover:text-orange-500">마이페이지</Link>
+              ) : (
+                <Link to="/login" className="hover:text-orange-500">로그인</Link>
+              )}
+              
+              <div className="border rounded-full flex items-center px-3 py-1 ml-4">
+                  <input type="text" placeholder="검색" className="focus:outline-none w-20 text-sm" />
+                  <span className="ml-2 text-gray-400">🔍</span>
+              </div>
+            </div>
+
+          
+          {/* 2. 캐러셀/슬라이드 영역 (Carousel 컴포넌트 사용) */}
+          <div className="relative h-64 border border-gray-300 rounded-lg overflow-hidden shadow-md"> 
             <Carousel /> 
           </div>
           
-          {/* 2-2. 공지사항 및 추천 동물 */}
+          {/* 3. 공지사항 및 추천 동물 */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             
             {/* 공지 사항 */}
@@ -99,7 +84,7 @@ export default function Home({ isLoggedIn }) {
             </div>
           </div>
 
-          {/* 2-3. 카테고리별 공고 섹션 */}
+          {/* 4. 카테고리별 공고 섹션 */}
           <div className="space-y-8">
             
             {/* 강아지 섹션 */}
@@ -131,7 +116,7 @@ export default function Home({ isLoggedIn }) {
 
         </section>
 
-        {/* 사이드바 (3/12 컬럼) */}
+        {/* 5. 사이드바 (3/12 컬럼) */}
         <aside className="col-span-12 lg:col-span-3">
           <div className="p-4 bg-gray-100 rounded-lg border h-40 flex items-center justify-center">
             <p className="text-gray-500 text-sm">광고<br/>(position fixed)</p>
@@ -139,7 +124,7 @@ export default function Home({ isLoggedIn }) {
         </aside>
 
       </main>
-       </div>
+      
+    </div>
   );
 }
-      

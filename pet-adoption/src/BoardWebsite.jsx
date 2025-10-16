@@ -163,7 +163,9 @@ export default function BoardWebsite() {
                 <span className="text-sm text-gray-600">{post.category}</span>
               </div>
               <div className="md:col-span-5 flex items-center gap-2">
-                <span className="hover:text-blue-600">{post.title}</span>
+                <Link to={`/board/${post.id}`} className="hover:text-blue-600">
+        {post.title}
+    </Link>
                 <span className="flex items-center gap-1 text-sm text-gray-500">
                   <MessageSquare className="w-4 h-4" />
                   {post.comments}
