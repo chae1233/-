@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Carousel from './Carousel'; // 👈 캐러셀 컴포넌트 임포트
 
@@ -24,7 +24,18 @@ const PetIconPlaceholder = ({ name, imageSrc }) => (
 
 
 export default function Home({ isLoggedIn }) { // 👈 isLoggedIn prop을 받습니다.
-
+  const [serverMessage, setServerMessage] = useState('서버 연결 대기 중...');
+useEffect(() => {
+        // Node.js 서버에 요청 보내기 (http://localhost:3001)
+        fetch('http://localhost:3001/api/test')
+            .then(res => res.json())
+            .then(data => {
+                setServerMessage(data.message); // 서버에서 받은 메시지를 저장
+            })
+            .catch(error => {
+                setServerMessage('❌ 서버 연결 실패! Node.js 서버가 실행 중인지 확인하세요.');
+            });
+    }, []);
   return (
     <div className="min-h-screen bg-white text-gray-800">
       

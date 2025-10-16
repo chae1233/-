@@ -1,6 +1,4 @@
-// src/BoardWrite.jsx
-
-import React, { useState } from 'react'; // 👈 입력 값 관리를 위해 useState 임포트
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function BoardWrite() {
@@ -11,7 +9,7 @@ export default function BoardWrite() {
     const [content, setContent] = useState('');
 
     // 폼 제출 시 실행되는 함수
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
         // 1. 필수 값 검증
@@ -20,15 +18,45 @@ export default function BoardWrite() {
             return;
         }
 
-        // 2. 🌟 서버 통신 시뮬레이션 🌟
-        console.log('--- 새 게시글 데이터 ---');
-        console.log('제목:', title);
-        console.log('내용:', content);
-        console.log('-------------------------');
-        alert('글이 성공적으로 작성되었습니다! (실제 저장 로직은 여기에 추가)');
+        // 2. 서버로 보낼 데이터 객체 생성 (실제 사용자 정보는 로그인 세션에서 가져와야 함)
+        const newPost = {
+            title: title,
+            content: content,
+            // 임시 사용자 정보 추가 (실제 구현 시 로그인 사용자 정보 사용)
+            author: "익명사용자", 
+            category: "자유게시판",
+            date: new Date().toISOString().split('T')[0], // YYYY-MM-DD 형식
+            views: 0,
+            likes: 0,
+            comments: 0,
+            isNotice: false,
+        };
 
-        // 3. 폼 제출 후 목록 페이지로 돌아가기
-        navigate('/board'); 
+        try {
+            // 3. 🌟 서버로 POST 요청 전송 🌟
+            const response = await fetch('http://localhost:3001/api/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newPost), // 데이터를 JSON 문자열로 변환하여 전송
+            });
+
+            if (!response.ok) {
+                // 서버가 200번대가 아닌 응답을 보냈을 경우
+                throw new Error(`글 등록에 실패했습니다: ${response.status}`);
+            }
+
+            // 4. 성공 응답 처리
+            alert('게시글이 성공적으로 등록되었습니다!');
+            
+            // 5. 글쓰기 완료 후 게시판 목록으로 이동
+            navigate('/board'); 
+
+        } catch (error) {
+            console.error('데이터 전송 중 오류 발생:', error);
+            alert(`게시글 등록 중 오류가 발생했습니다. 서버 상태를 확인하세요. (${error.message})`);
+        }
     };
 
     return (
